@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+iscidr () {
+    [[ ${1} =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\/?[0-9]{1,2}?$ ]] && echo $1
+}
+
+inet_ntoa () {
+    [[ ${1} =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]] || return 255
+    IFS=".";set - ${1}
+    OCT1=$(($1<<24));OCT2=$(($2<<16));OCT3=$(($3<<8));OCT4=$4
+    echo $(($OCT1+$OCT2+$OCT3+$OCT4))
+}
+
+inet_aton () {
+    [[ ${1} =~ ^[0-9]+$ ]] || return 255
+    ADDRESS=${1}
+    OCT4=$((${ADDRESS} % 256));ADDRESS=$((${ADDRESS}-${OCT1}));ADDRESS=$((${ADDRESS}/256))
+    OCT3=$((${ADDRESS} % 256));ADDRESS=$((${ADDRESS}-${OCT2}));ADDRESS=$((${ADDRESS}/256))
+    OCT2=$((${ADDRESS} % 256));ADDRESS=$((${ADDRESS}-${OCT3}));ADDRESS=$((${ADDRESS}/256))
+    OCT1=$((${ADDRESS} % 256));ADDRESS=$((${ADDRESS}-${OCT4}));ADDRESS=$((${ADDRESS}/256))
+    echo "${OCT1}.${OCT2}.${OCT3}.${OCT4}"
+}
