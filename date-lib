@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+lastdayofmonth () {
+    MONTH=$[${1:-$(date +'%m')}+1]
+    echo $(date -d "$(date +%Y-${MONTH}-1) -1 day" +%d)
+}
