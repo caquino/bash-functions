@@ -22,6 +22,18 @@ inet_aton () {
     echo "${OCT1}.${OCT2}.${OCT3}.${OCT4}"
 }
 
+isipinrange () {
+    [[ ${1} =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]] || return 255
+    [[ ${2} =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\/?[0-9]{1,2}?$ ]] || return 255
+    NETWORK=$(inet_ntoa ${2%%/*})
+    BITMASK=${2##*/}
+    BITMASK=$((~((1<<(32 - $BITMASK))-1)))
+    IPDEC=$(inet_ntoa ${1})
+    IPNET=$((${IPDEC}&${BITMASK}))
+    [[ ${IPNET} == ${NETWORK} ]] && return 0
+    return 1
+}
+
 function debug_http () {
     curl -s $@ -o /dev/null \
     -w "http_code %{http_code} time_appconnect %{time_appconnect} time_namelookup %{time_namelookup} time_connect %{time_connect} time_pretransfer %{time_pretransfer} time_starttransfer %{time_starttransfer} time_total %{time_total} speed_download %{speed_download}\n"
