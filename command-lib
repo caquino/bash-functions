@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+ssh_remote_exec() {
+    # 1 - host
+    # 2 - login
+    # 3 - script
+    0<>${3} ssh -T -q -q -x -o 'BatchMode yes' -l ${2} ${1} 2>&1 > /dev/null
+}
