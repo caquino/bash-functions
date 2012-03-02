@@ -34,6 +34,16 @@ isipinrange () {
     return 1
 }
 
+bit2mask () {
+  [[ ${1} =~ ^[0-9]{1,2}$ ]] || return 255
+  local NETMASK
+  local BITMASK="$(printf '1%.0s' {1..$1})$(printf '0%.0s' {1..$[32-$1]})"
+  for ((i=0;$i<=24;i=$i+8)) {
+    echo -ne "$(( 2#${BITMASK:$i:8} ))"
+    [ $i -lt 24 ] && echo -ne "."
+  }
+}
+
 function debug_http () {
     curl -s $@ -o /dev/null \
     -w "http_code %{http_code} time_appconnect %{time_appconnect} time_namelookup %{time_namelookup} time_connect %{time_connect} time_pretransfer %{time_pretransfer} time_starttransfer %{time_starttransfer} time_total %{time_total} speed_download %{speed_download}\n"
