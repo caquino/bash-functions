@@ -44,15 +44,27 @@ bit2mask () {
   }
 }
 
-function debug_http () {
+debug_http () {
     curl -s $@ -o /dev/null \
     -w "http_code %{http_code} time_appconnect %{time_appconnect} time_namelookup %{time_namelookup} time_connect %{time_connect} time_pretransfer %{time_pretransfer} time_starttransfer %{time_starttransfer} time_total %{time_total} speed_download %{speed_download}\n"
 }
 
-function debug_http_csv() {
+debug_http_csv() {
     echo "timestamp;http_code;time_appconnect;time_namelookup;time_connect;time_pretransfer;time_starttransfer;time_total;speed_download"
     for ((i=0;$i<=$2;i++)) {
         curl -s $1 -o /dev/null -w "$(date +%s);%{http_code};%{time_appconnect};%{time_namelookup};%{time_connect};%{time_pretransfer};%{time_starttransfer};%{time_total};%{speed_download}\n"
         sleep 1
     }
+}
+
+urlencode() {
+  local arg
+  arg="$1"
+  while [[ "$arg" =~ ^([0-9a-zA-Z/:_\.\-]*)([^0-9a-zA-Z/:_\.\-])(.*) ]] ; do
+    echo -n "${BASH_REMATCH[1]}"
+    printf "%%%X" "'${BASH_REMATCH[2]}'"
+    arg="${BASH_REMATCH[3]}"
+  done
+  # the remaining part
+  echo -n "$arg"
 }
